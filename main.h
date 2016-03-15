@@ -18,54 +18,10 @@ typedef void *EFI_HANDLE;
 typedef unsigned char BOOLEAN;
 
 struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
+struct _EFI_GRAPHICS_OUTPUT_PROTOCOL;
 
-typedef
-EFI_STATUS
-(EFIAPI *EFI_TEXT_STRING) (
-    IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL  *This,
-    IN CHAR16                                   *String
-    );
-
-typedef
-EFI_STATUS
-(EFIAPI *EFI_TEXT_QUERY_MODE) (
-	IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
-	IN UINTN						   ModeNumber,
-	OUT UINTN						   *Columns,
-	OUT UINTN						   *Rows
-	);
-
-typedef
-EFI_STATUS
-(EFIAPI *EFI_TEXT_RESET) (
-	IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
-	IN BOOLEAN								   ExtendedVerification
-	);
-
-typedef
-EFI_STATUS
-(EFIAPI *EFI_TEXT_CLEAR_SCREEN) (
-	IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This
-	);
-
-typedef
-EFI_STATUS
-(EFIAPI *EFI_TEXT_SET_CURSOR_POSITION) (
-	IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
-	IN UINTN								   Column,
-	IN UINTN								   Row
-	);
-
-typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL {
-	EFI_TEXT_RESET 					Reset;
-    EFI_TEXT_STRING  				OutputString;
-	void							*a;
-	EFI_TEXT_QUERY_MODE 			QueryMode;
-	void							*b;
-	void							*c;
-	EFI_TEXT_CLEAR_SCREEN			ClearScreen;
-	EFI_TEXT_SET_CURSOR_POSITION	SetCursorPosition;
-} EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
+#include "text_output.h"
+//#include "graphics_output.h"
 
 typedef struct {
     char                             a[52];
