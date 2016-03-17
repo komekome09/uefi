@@ -7,23 +7,62 @@ EfiMain (
     IN EFI_SYSTEM_TABLE *SystemTable
     )
 {
-	CHAR16 *hoge[4] = {L"-", L"\\", L"|", L"/"}, test[2] = {0x0030, 0x0000};
 	CHAR16 num[20];
 	UINTN column = 0, row = 0;
+	int a = 8, start = 8, count = 10;
 
 	SystemTable->ConOut->QueryMode(SystemTable->ConOut, (UINTN)0, &column, &row);
-
 	SystemTable->ConOut->ClearScreen(SystemTable->ConOut);
 
-	for(int i = 0; i < 10000; i++){
-    	SystemTable->ConOut->SetCursorPosition(SystemTable->ConOut, 0, 0);
-    	SystemTable->ConOut->OutputString(SystemTable->ConOut, hoge[i%4]);
-		//test[0] = test[0]++;
+	while(a < column){
+		int disp_flag[80];
+		SystemTable->ConOut->SetCursorPosition(SystemTable->ConOut, 0, 0);
+		SystemTable->ConOut->OutputString(SystemTable->ConOut, L"| o   o |");
+
+		for(int i = 0; i < 80; i++){
+			disp_flag[i] = 0;
+		}
+
+		int b = a;
+		while(count-- && b > start - 1){
+			if(b == start){
+				disp_flag[b-1] = 1; disp_flag[b-5] = 1;
+			}else if(b == start + 1){
+				disp_flag[b-1] = disp_flag[b-2] = 1;
+				disp_flag[b-5] = disp_flag[b-6] = 1;
+			}else{
+				disp_flag[b-1] = disp_flag[b-2] = disp_flag[b-3] = 1;
+				disp_flag[b-5] = disp_flag[b-6] = disp_flag[b-7] = 1;
+			}
+
+			b -= 15;
+		}
+
+		for(int i = 0; i < a && i < (int)column; i++){
+			SystemTable->ConOut->SetCursorPosition(SystemTable->ConOut, (UINTN)i, 0);
+			if(disp_flag[i]){
+				SystemTable->ConOut->OutputString(SystemTable->ConOut, L"-");
+			}else{
+				switch(i){
+					case 2:
+					case 6:
+						SystemTable->ConOut->OutputString(SystemTable->ConOut, L"o");
+						break;
+					case 0:
+					case 8:
+						SystemTable->ConOut->OutputString(SystemTable->ConOut, L"|");
+						break;
+					default:
+						SystemTable->ConOut->OutputString(SystemTable->ConOut, L" ");
+						break;
+				}
+			}
+		}
+		a++;
 	}
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"\n");
+    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"\r\n");
     SystemTable->ConOut->OutputString(SystemTable->ConOut, num_to_ucs2(column, num));
     SystemTable->ConOut->OutputString(SystemTable->ConOut, num_to_ucs2(row, num));
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"\nHello World!\n");
     while(1);
     return EFI_SUCCESS;
 }

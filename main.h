@@ -18,10 +18,8 @@ typedef void *EFI_HANDLE;
 typedef unsigned char BOOLEAN;
 
 struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
-struct _EFI_GRAPHICS_OUTPUT_PROTOCOL;
 
 #include "text_output.h"
-//#include "graphics_output.h"
 
 typedef struct {
     char                             a[52];

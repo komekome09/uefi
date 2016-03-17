@@ -1,3 +1,12 @@
+#define EFI_TEXT_ATTR(ForeGround, BackGround) ((ForeGround) | ((BackGround) << 4))
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_TEXT_RESET) (
+	IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
+	IN BOOLEAN								   ExtendedVerification
+	);
+
 typedef
 EFI_STATUS
 (EFIAPI *EFI_TEXT_STRING) (
@@ -16,9 +25,9 @@ EFI_STATUS
 
 typedef
 EFI_STATUS
-(EFIAPI *EFI_TEXT_RESET) (
-	IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
-	IN BOOLEAN								   ExtendedVerification
+(EFIAPI *EFI_TEXT_SET_ATTRIBUTE) (
+	IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL	*This,
+	IN UINTN									Attribute
 	);
 
 typedef
@@ -41,7 +50,7 @@ typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL {
 	void							*a;
 	EFI_TEXT_QUERY_MODE 			QueryMode;
 	void							*b;
-	void							*c;
+	EFI_TEXT_SET_ATTRIBUTE			SetAttribute;
 	EFI_TEXT_CLEAR_SCREEN			ClearScreen;
 	EFI_TEXT_SET_CURSOR_POSITION	SetCursorPosition;
 } EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
