@@ -1,30 +1,38 @@
+// data type
+typedef unsigned short 					CHAR16;
+typedef	CHAR16							UINT16;
+typedef unsigned long long 				UINTN;
+typedef UINTN 							EFI_STATUS;
+typedef void 							*EFI_HANDLE;
+typedef unsigned char 					BOOLEAN;
+
+// boolean
+#define TRUE							1
+#define FALSE 							0
+
+// EFI parameters
 #define IN
 #define OUT
 #define EFIAPI
 
 // return code
-#define EFI_SUCCESS 0
-#define EFI_DEVICE_ERROR 1
-#define EFI_UNSUPPORTED 2
-
-// boolean
-#define TRUE 1
-#define FALSE 0
-
-typedef unsigned short CHAR16;
-typedef unsigned long long UINTN;
-typedef UINTN EFI_STATUS;
-typedef void *EFI_HANDLE;
-typedef unsigned char BOOLEAN;
+#define EFI_SUCCESS 					0
+#define EFI_DEVICE_ERROR 				1
+#define EFI_UNSUPPORTED 				2
+#define EFI_NOT_READY					3
 
 struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
+struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL;
 
 #include "text_output.h"
+#include "text_input.h"
 
 typedef struct {
-    char                             a[52];
-    EFI_HANDLE                       ConsoleOutHandle;
-    EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL  *ConOut;
+    char                             	a[36];
+	EFI_HANDLE							ConsoleInHandle;
+	EFI_SIMPLE_TEXT_INPUT_PROTOCOL		*ConIn;
+    EFI_HANDLE                       	ConsoleOutHandle;
+    EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL  	*ConOut;
 } EFI_SYSTEM_TABLE;
 
 CHAR16* num_to_ucs2(UINTN num, CHAR16 *res){

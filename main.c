@@ -7,6 +7,9 @@ EfiMain (
     IN EFI_SYSTEM_TABLE *SystemTable
     )
 {
+	EFI_STATUS status;
+	EFI_INPUT_KEY key;
+
 	CHAR16 num[20];
 	UINTN column = 0, row = 0;
 	int a = 8, start = 8, count = 10;
@@ -15,13 +18,9 @@ EfiMain (
 	SystemTable->ConOut->ClearScreen(SystemTable->ConOut);
 
 	while(a < column){
-		int disp_flag[80];
+		int disp_flag[80] = {0};
 		SystemTable->ConOut->SetCursorPosition(SystemTable->ConOut, 0, 0);
 		SystemTable->ConOut->OutputString(SystemTable->ConOut, L"| o   o |");
-
-		for(int i = 0; i < 80; i++){
-			disp_flag[i] = 0;
-		}
 
 		int b = a;
 		while(count-- && b > start - 1){
@@ -63,6 +62,7 @@ EfiMain (
     SystemTable->ConOut->OutputString(SystemTable->ConOut, L"\r\n");
     SystemTable->ConOut->OutputString(SystemTable->ConOut, num_to_ucs2(column, num));
     SystemTable->ConOut->OutputString(SystemTable->ConOut, num_to_ucs2(row, num));
-    while(1);
-    return EFI_SUCCESS;
+
+    while((status = SystemTable->ConIn->ReadKeyStroke(SystemTable->ConIn, &key)) == EFI_NOT_READY);
+    return status;
 }
