@@ -49,4 +49,4 @@ tags
 
 *.efi
 image/
-
+OVMF/

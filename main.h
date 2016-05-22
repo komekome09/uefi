@@ -1,31 +1,47 @@
+#include <stdint.h>
+
 // data type
-typedef unsigned short 					CHAR16;
+typedef uint8_t 						UINT8;
+typedef UINT8							BOOLEAN;
+typedef uint16_t 						CHAR16;
 typedef	CHAR16							UINT16;
-typedef unsigned long long 				UINTN;
+typedef uint32_t						UINT32;
+typedef uint64_t						UINTN;
 typedef UINTN 							EFI_STATUS;
+typedef UINTN							UINT64;
 typedef void 							*EFI_HANDLE;
-typedef unsigned char 					BOOLEAN;
+typedef void							*EFI_EVENT;
+typedef struct {
+	UINT32								Data1;
+	UINT16								Data2;
+	UINT16								Data3;
+	UINT8								Data4[8];
+} EFI_GUID;
 
 // boolean
-#define TRUE							1
-#define FALSE 							0
+#define TRUE							(BOOLEAN)1
+#define FALSE 							(BOOLEAN)0
 
 // EFI parameters
 #define IN
 #define OUT
 #define EFIAPI
+#define OPTIONAL
 
 // return code
-#define EFI_SUCCESS 					0
-#define EFI_DEVICE_ERROR 				1
-#define EFI_UNSUPPORTED 				2
-#define EFI_NOT_READY					3
+#define EFI_SUCCESS 					(EFI_STATUS)0
+#define EFI_DEVICE_ERROR 				(EFI_STATUS)1
+#define EFI_UNSUPPORTED 				(EFI_STATUS)2
+#define EFI_NOT_READY					(EFI_STATUS)3
+#define EFI_INVALID_PARAMETER			(EFI_STATUS)4
+#define EFI_OUT_OF_RESOURCES			(EFI_STATUS)5
 
 struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL;
 
 #include "text_output.h"
 #include "text_input.h"
+#include "efi_event.h"
 
 typedef struct {
     char                             	a[36];
@@ -33,6 +49,9 @@ typedef struct {
 	EFI_SIMPLE_TEXT_INPUT_PROTOCOL		*ConIn;
     EFI_HANDLE                       	ConsoleOutHandle;
     EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL  	*ConOut;
+	char								b[54];
+	char								c[144];
+	EFI_BOOT_SERVICE					*BootService;
 } EFI_SYSTEM_TABLE;
 
 CHAR16* num_to_ucs2(UINTN num, CHAR16 *res){
