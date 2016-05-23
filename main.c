@@ -26,14 +26,17 @@ EfiMain (
     
 	int len = 0;
 	UINTN Index;
-	EFI_EVENT Event;
+	EFI_EVENT Event = SystemTable->ConIn->WaitForKey;
 	while(1){
 		status = SystemTable->BootService->WaitForEvent(1, &Event, &Index);
-		ASSERT(!(status > 0));
-		ASSERT(Index == 0);
+		if(status > 0 || Index != 0){
+			break;
+		}
 
 		status = SystemTable->ConIn->ReadKeyStroke(SystemTable->ConIn, &key);
-		ASSERT(!(status > 0));
+		if(status > 0){
+			break;
+		}
 
 		if(key.UnicodeChar == '\r' || key.UnicodeChar == '\n'){
 			break;
@@ -48,27 +51,6 @@ EfiMain (
 			continue;
 		}
 	}
-	/*
-	while(1){
-		status = SystemTable->ConIn->ReadKeyStroke(SystemTable->ConIn, &key);
-
-		if(status != EFI_NOT_READY){
-			continue;
-			if(i < 19){
-				option[i] = key.UnicodeChar;
-				i++;
-				CHAR16 tmp[2] = {key.UnicodeChar, 0x0000};
-				SystemTable->ConOut->OutputString(SystemTable->ConOut, tmp);
-			}
-		}else if(status > 0){
-			SystemTable->ConOut->OutputString(SystemTable->ConOut, L"error.");
-			break;
-		}
-		if(key.UnicodeChar == '\n' || key.UnicodeChar == '\r') break;
-		SystemTable->ConOut->OutputString(SystemTable->ConOut, num_to_ucs2(key.UnicodeChar, num));
-	}
-	*/
-	//SystemTable->ConOut->OutputString(SystemTable->ConOut, option);
 
 	while(a < column){
 		int disp_flag[80] = {0};

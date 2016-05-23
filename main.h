@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <assert.h>
 
 // data type
 typedef uint8_t 						UINT8;
@@ -49,9 +50,8 @@ typedef struct {
 	EFI_SIMPLE_TEXT_INPUT_PROTOCOL		*ConIn;
     EFI_HANDLE                       	ConsoleOutHandle;
     EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL  	*ConOut;
-	char								b[54];
-	char								c[144];
-	EFI_BOOT_SERVICE					*BootService;
+	char								b[24];
+	EFI_BOOT_SERVICES					*BootService;
 } EFI_SYSTEM_TABLE;
 
 CHAR16* num_to_ucs2(UINTN num, CHAR16 *res){

@@ -63,10 +63,17 @@ EFI_STATUS
 	);
 
 typedef struct {
-	char					a[80];
+	char					a[24];
+	void					*b;
+	void					*c;
+	void					*d;
+	void					*e;
+	void					*f;
+	void					*g;
+	void					*h;
 	EFI_CREATE_EVENT		CreateEvent;
 	EFI_SET_TIMER			SetTimer;
 	EFI_WAIT_FOR_EVENT		WaitForEvent;
-	char					b[8];
+	void					*i;
 	EFI_CLOSE_EVENT			CloseEvent;
-}EFI_BOOT_SERVICE;
+}EFI_BOOT_SERVICES;
