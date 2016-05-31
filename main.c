@@ -9,53 +9,54 @@ EfiMain (
     IN EFI_SYSTEM_TABLE *SystemTable
     )
 {
-	EFI_STATUS status;
-	EFI_INPUT_KEY key;
+	EFI_STATUS status = EFI_SUCCESS;
 
 	CHAR16 num[20];
-	CHAR16 option[STRLEN] = {0x0000};
+	CHAR16 option[STRLEN] = {0x0000}, num_count[STRLEN] = {0x0000};
 	UINTN column = 0, row = 0;
 	int a = 8, start = 8, count = 10;
+	int wait = 80000;
+	BOOLEAN isGirl = FALSE, isShape = FALSE, isWave = FALSE;
 
 	SystemTable->ConOut->QueryMode(SystemTable->ConOut, (UINTN)0, &column, &row);
 	SystemTable->ConOut->EnableCursor(SystemTable->ConOut, TRUE);
 	SystemTable->ConOut->Reset(SystemTable->ConOut, FALSE);
 
 	SystemTable->ConOut->OutputString(SystemTable->ConOut, L"option: ");
-	SystemTable->ConIn->Reset(SystemTable->ConIn, FALSE);
-    
-	int len = 0;
-	UINTN Index;
-	EFI_EVENT Event = SystemTable->ConIn->WaitForKey;
-	while(1){
-		status = SystemTable->BootService->WaitForEvent(1, &Event, &Index);
-		if(status > 0 || Index != 0){
-			break;
-		}
+	tmp_input(SystemTable->ConIn, SystemTable->ConOut, SystemTable->BootService, STRLEN, option);
 
-		status = SystemTable->ConIn->ReadKeyStroke(SystemTable->ConIn, &key);
-		if(status > 0){
-			break;
-		}
+	SystemTable->ConOut->OutputString(SystemTable->ConOut, L"\ninput: ");
+	SystemTable->ConOut->OutputString(SystemTable->ConOut, option);
 
-		if(key.UnicodeChar == '\r' || key.UnicodeChar == '\n'){
-			break;
-		}
-
-		if(key.UnicodeChar >= ' '){
-			if(len < STRLEN - 1){
-				option[len] = key.UnicodeChar;
-				SystemTable->ConOut->OutputString(SystemTable->ConOut, &option[len]);
-				len++;
-			}
-			continue;
+	for(int i = 0; option[i] != 0x0000; i++){
+		switch(option[i]){
+			case 'c': 
+				SystemTable->ConOut->SetAttribute(SystemTable->ConOut, 0x05);
+				break;
+			case 'f': wait = 40000; break;
+			case 'g': isGirl = TRUE; break;
+			case 'h': show_help(); break;
+			case 'n':
+				SystemTable->ConOut->OutputString(SystemTable->ConOut, L"\ncount: ");
+				tmp_input(SystemTable->ConIn, SystemTable->ConOut, SystemTable->BootService, STRLEN, num_count);
+				count = ch16_to_int(num_count);
+				SystemTable->ConOut->OutputString(SystemTable->ConOut, L"\ninput: ");
+				SystemTable->ConOut->OutputString(SystemTable->ConOut, num_to_ucs2(count, num));
+				break;
+			case 's': isShape = TRUE; break;
+			case 'w': isWave = TRUE; break;
 		}
 	}
+
+	CHAR16 nipple[4][11] = {L"| o   o |",
+							L"( o   o )",
+							L"| *   * |",
+							L"( *   * )"};
 
 	while(a < column){
 		int disp_flag[80] = {0};
 		SystemTable->ConOut->SetCursorPosition(SystemTable->ConOut, 0, 10);
-		SystemTable->ConOut->OutputString(SystemTable->ConOut, L"| o   o |");
+		SystemTable->ConOut->OutputString(SystemTable->ConOut, nipple[0+isGirl+2*isShape]);
 
 		int b = a;
 		while(count-- && b > start - 1){
@@ -75,16 +76,22 @@ EfiMain (
 		CHAR16 disp[80] = {0x0000};
 		for(int i = 0; i < a && i < (int)column; i++){
 			if(disp_flag[i]){
-				disp[i] = 0x002d;// -;
+				if(isWave) disp[i] = '~';
+				else disp[i] = 0x002d;// -;
 			}else{
 				switch(i){
 					case 2:
 					case 6:
-						disp[i] = 0x006f; // o
+						if(isShape) disp[i] = 0x002A; // *
+						else disp[i] = 0x006f; // o
 						break;
 					case 0:
+						if(isGirl) disp[i] = 0x0028; // (
+						else disp[i] = 0x007c; // |
+						break;
 					case 8:
-						disp[i] = 0x007c; // |
+						if(isGirl) disp[i] = 0x0029; // (
+						else disp[i] = 0x007c; // |
 						break;
 					default:
 						disp[i] = 0x0020; //" "
@@ -97,20 +104,13 @@ EfiMain (
 		SystemTable->ConOut->OutputString(SystemTable->ConOut, disp);
 
 		a++;
+		for(int i = 0; i < wait; i++);
 	}
     SystemTable->ConOut->OutputString(SystemTable->ConOut, L"\r\n");
     SystemTable->ConOut->OutputString(SystemTable->ConOut, num_to_ucs2(column, num));
     SystemTable->ConOut->OutputString(SystemTable->ConOut, num_to_ucs2(row, num));
+    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"\r\n");
 
-    SystemTable->ConIn->Reset(SystemTable->ConIn, FALSE);
-	while(1){
-		status = SystemTable->ConIn->ReadKeyStroke(SystemTable->ConIn, &key);
-
-		if(status != EFI_NOT_READY && status > 0){
-			SystemTable->ConOut->OutputString(SystemTable->ConOut, L"error.");
-			break;
-		}
-		if(key.UnicodeChar == '\n' || key.UnicodeChar == '\r') break;
-	}
+	tmp_input(SystemTable->ConIn, SystemTable->ConOut, SystemTable->BootService, 0, NULL);
     return status;
 }

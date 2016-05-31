@@ -54,6 +54,32 @@ typedef struct {
 	EFI_BOOT_SERVICES					*BootService;
 } EFI_SYSTEM_TABLE;
 
+int uefi_pow(int p, int w){
+	int a = 1;
+	for(int i = 0; i < w; i++){
+		a *= p;
+	}
+	return a;
+}
+
+int ch16_to_int(CHAR16* opt){
+	int tmp[128], k = 0, ret = 0;
+	if(opt == NULL){
+		return -1;
+	}
+	for(int i = 0; opt[i] != '\0'; i++){
+		if(opt[i] >= '0' && opt[i] <= '9'){		
+			tmp[i] = opt[i] - '0';
+			k++;
+		}
+	}
+	for(int i = k - 1, j = 0; i >= 0; i--, j++){
+		ret += tmp[i] * uefi_pow(10, j);	
+	}
+
+	return ret;
+}
+
 CHAR16* num_to_ucs2(UINTN num, CHAR16 *res){
 	UINTN digits[20];
 	int i = 0, k = 0, j = 0;
@@ -73,4 +99,59 @@ CHAR16* num_to_ucs2(UINTN num, CHAR16 *res){
 	res[j+1] = 0x0000;
 
 	return res;
+}
+
+void tmp_input(EFI_SIMPLE_TEXT_INPUT_PROTOCOL 	*ConIn, 
+			EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL 	*ConOut,
+			EFI_BOOT_SERVICES					*BS,
+			IN UINTN							StrLen,
+			OUT CHAR16							*Output){
+	if(ConIn == NULL || ConOut == NULL || BS == NULL){
+		return;
+	}
+
+	int len = 0;
+	UINTN Index;
+	EFI_INPUT_KEY key;
+	EFI_EVENT Event = ConIn->WaitForKey;
+	EFI_STATUS status;
+
+	while(1){
+		status = BS->WaitForEvent(1, &Event, &Index);
+		if(status > 0 || Index != 0){
+			ConOut->OutputString(ConOut, L"error.");
+			break;
+		}
+
+		status = ConIn->ReadKeyStroke(ConIn, &key);
+		if(status > 0){
+			ConOut->OutputString(ConOut, L"error.");
+			break;
+		}
+
+		if(key.UnicodeChar == 0x0008){
+			if(len){
+				ConOut->OutputString(ConOut, L"\b \b");
+				len--;
+			}
+			continue;
+		}
+
+		if(key.UnicodeChar == '\r' || key.UnicodeChar == '\n'){
+			break;
+		}
+
+		if(Output != NULL && key.UnicodeChar >= ' '){
+			if(len < StrLen - 1){
+				Output[len] = key.UnicodeChar;
+				ConOut->OutputString(ConOut, &Output[len]);
+				len++;
+			}
+		}
+	}
+	Output[len] = 0x0000;	
+}
+
+void show_help(){
+	
 }
