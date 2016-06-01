@@ -1,11 +1,16 @@
-CC = x86_64-w64-mingw32-gcc
-CFLAGS = -std=c99 -shared -nostdlib -mno-red-zone -fno-stack-protector -Wall \
-         -e EfiMain -pedantic
+ARCH		= x86_64
 
-all: main.efi
+prefix		= $(ARCH)-w64-mingw32-
+CC 			= $(prefix)gcc
+
+CFLAGS 		= --std=c99 -shared -nostdlib -mno-red-zone -fno-stack-protector -Wall -e EfiMain
+
+FORMAT		= efi-app-$(ARCH)
+
+all: qemu
 
 %.efi: %.dll
-	objcopy --target=efi-app-x86_64 $< $@
+	objcopy --target=$(FORMAT) $< $@
 
 %.dll: %.c
 	$(CC) $(CFLAGS) $< -o $@
